@@ -1,15 +1,18 @@
 const bcrypt = require("bcryptjs");
 const express = require("express");
 const Joi = require("joi");
-const mysql = require("mysql2/promise");
-
+const db = require("../index");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const rows = await d;
+  const [rows] = await db.execute(
+    "SELECT * FROM users WHERE email = ?",
+    req.body.email
+  );
+  if (rows) return res.status(400).send("email adress already in use");
   const salt = bcrypt.genSalt(10);
   res.send(users);
 });
@@ -30,7 +33,10 @@ const validateUser = function (user) {
     email: Joi.string().email(),
     password: PasswordComplexity(complexityOptions).required(),
     isAdmin: Joi.boolean(),
-  });
+    contactNumber: Joi.string().pattern(/^\d{9,10}$/),
+  })
+    .or("email", "userName")
+    .and("userName");
 
   return userSchema.validate(user);
 };
