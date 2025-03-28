@@ -4,6 +4,7 @@ const Joi = require("joi");
 const db = require("../startup/db");
 const router = express.Router();
 const PasswordComplexity = require("joi-password-complexity");
+const sendEmail = require("../utils/sendMail");
 
 router.post("/", async (req, res) => {
   const { error } = validateUser(req.body);
@@ -35,6 +36,8 @@ router.post("/", async (req, res) => {
       "INSERT INTO users (username, email, contact_number, hash, is_admin) VALUES (?, ?, ?, ?, ?)",
       [userName, email, contactNumber, hash, isAdmin]
     );
+
+    sendEmail(email, result.insertId);
 
     res.send({
       userId: result.insertId,
