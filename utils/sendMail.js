@@ -1,6 +1,13 @@
 const nodemailer = require("nodemailer");
+const fs = require("fs").promises;
 
 async function sendEmail(userEmail, userId) {
+  const emailHtml = await fs.readFile(
+    "templates\\emails\\signUp.html",
+    "utf-8"
+  );
+  const updatedHtml = emailHtml.replace("{{userId}}", userId);
+
   let transport = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -13,13 +20,9 @@ async function sendEmail(userEmail, userId) {
     from: "yoirchalk1995@gmail.com",
     to: userEmail,
     subject: "confirm your email adress",
-    html: `
-    <p> click link below to confirm email adress </p>
-    <a href="http://localhost:3000/confirm?userid='${userId}'">
-    confirm email </a>
-    `,
+    html: updatedHtml,
   };
-  await transport.sendMail(mailOptions, (err) => console.log(err));
+  await transport.sendMail(mailOptions);
 }
 
 module.exports = sendEmail;
