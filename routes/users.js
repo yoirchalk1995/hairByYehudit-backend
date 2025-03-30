@@ -5,6 +5,8 @@ const db = require("../startup/db");
 const router = express.Router();
 const PasswordComplexity = require("joi-password-complexity");
 const sendEmail = require("../utils/sendMail");
+const interNumber = require("../utils/interNumber");
+const sendSms = require("../utils/sendSMS");
 
 router.post("/", async (req, res) => {
   const { error } = validateUser(req.body);
@@ -36,8 +38,14 @@ router.post("/", async (req, res) => {
       "INSERT INTO users (username, email, contact_number, hash, is_admin) VALUES (?, ?, ?, ?, ?)",
       [userName, email, contactNumber, hash, isAdmin]
     );
+    if (email) {
+      sendEmail(email, result.insertId);
+    }
 
-    sendEmail(email, result.insertId);
+    if (contactNumber) {
+      const updatedNumber = interNumber(contactNumber);
+      sendSms(updatedNumber);
+    }
 
     res.send({
       userId: result.insertId,
