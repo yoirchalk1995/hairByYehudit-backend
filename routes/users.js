@@ -12,7 +12,8 @@ router.post("/", async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let { email, userName, contactNumber, password, isAdmin } = req.body;
+  let { email, userName, contactNumber, password, isAdmin, requestsVoice } =
+    req.body;
 
   try {
     if (email) {
@@ -43,6 +44,10 @@ router.post("/", async (req, res) => {
     }
 
     if (contactNumber) {
+      if (requestsVoice) {
+        sendVoiceMessage(contactNumber);
+        return;
+      }
       const updatedNumber = interNumber(contactNumber);
       sendSms(updatedNumber);
     }
