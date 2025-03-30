@@ -1,7 +1,8 @@
 const twilio = require("twilio");
+require("dotenv").config();
 
-const accountSid = "AC486373f7b5bfc1189f172d3e7137558a";
-const authToken = "61a0a278e5bf6f6a0c2a7a82da94a94e";
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 const client = twilio(accountSid, authToken);
 
@@ -11,7 +12,7 @@ async function sendSMS(intContactNumber) {
   try {
     const message = await client.messages.create({
       body: `This is your OTP; ${otp}`,
-      from: "+16193674484",
+      from: process.env.TWILIO_PHONE_NUMBER,
       to: intContactNumber,
     });
     console.log(message.body);
