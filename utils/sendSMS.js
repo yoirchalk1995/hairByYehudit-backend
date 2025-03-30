@@ -19,5 +19,3 @@ async function createSMS(intContactNumber) {
     console.log(err);
   }
 }
-
-createSMS();
