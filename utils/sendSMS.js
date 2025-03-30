@@ -7,7 +7,7 @@ const client = twilio(accountSid, authToken);
 
 const otp = Math.floor(100000000 * Math.random());
 
-async function createSMS(intContactNumber) {
+async function sendSMS(intContactNumber) {
   try {
     const message = await client.messages.create({
       body: `This is your OTP; ${otp}`,
@@ -19,3 +19,5 @@ async function createSMS(intContactNumber) {
     console.log(err);
   }
 }
+
+module.exports = sendSMS;
