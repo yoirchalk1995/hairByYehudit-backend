@@ -61,7 +61,7 @@ router.post("/", async (req, res) => {
 
       const otp = await sendSMS(updatedNumber);
 
-      await db.query("INSERT INTO verification (user_id, otp) VALUES (?,?)", [
+      await db.query("INSERT INTO verifications (user_id, otp) VALUES (?,?)", [
         result.insertId,
         otp,
       ]);
