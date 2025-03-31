@@ -6,7 +6,7 @@ const router = express.Router();
 const PasswordComplexity = require("joi-password-complexity");
 const sendEmail = require("../utils/sendMail");
 const interNumber = require("../utils/interNumber");
-const sendSms = require("../utils/sendSMS");
+const sendSMS = require("../utils/sendSMS");
 
 router.post("/", async (req, res) => {
   const { error } = validateUser(req.body);
@@ -26,10 +26,14 @@ router.post("/", async (req, res) => {
     }
 
     if (userName) {
-      const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [
-        userName,
-      ]);
-      if (rows.length) return res.status(400).send("username already in use");
+      const [rows] = await db.query(
+        "SELECT * FROM users WHERE username = ? OR contact_number = ?",
+        [userName, contactNumber]
+      );
+      if (rows.length)
+        return res
+          .status(400)
+          .send("username and contact number must be unique");
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -39,17 +43,27 @@ router.post("/", async (req, res) => {
       "INSERT INTO users (username, email, contact_number, hash, is_admin) VALUES (?, ?, ?, ?, ?)",
       [userName, email, contactNumber, hash, isAdmin]
     );
+
+    const sentEmail = false;
     if (email) {
       sendEmail(email, result.insertId);
+      sendEmail = true;
     }
 
-    if (contactNumber) {
+    if (contactNumber && !sentEmail) {
+      const updatedNumber = interNumber(contactNumber);
+
       if (requestsVoice) {
-        sendVoiceMessage(contactNumber);
+        sendVoiceMessage(updatedNumber);
         return;
       }
-      const updatedNumber = interNumber(contactNumber);
-      sendSms(updatedNumber);
+
+      const otp = await sendSMS(updatedNumber);
+
+      await db.query("INSERT INTO verification (user_id, otp) VALUES (?,?)", [
+        result.insertId,
+        otp,
+      ]);
     }
 
     res.send({
