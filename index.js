@@ -1,6 +1,7 @@
 const express = require("express");
 const helmet = require("helmet");
 const users = require("./routes/users");
+const verification = require("./routes/verification");
 require("./startup/db");
 
 const app = express();
@@ -8,6 +9,7 @@ const app = express();
 app.use(helmet());
 app.use(express.json());
 app.use("/users", users);
+app.use("/verification", verification);
 
 const port = process.env.PORT || 3000;
 
