@@ -1,12 +1,13 @@
 const bcrypt = require("bcryptjs");
-const express = require("express");
+const interNumber = require("../utils/interNumber");
 const Joi = require("joi");
-const db = require("../startup/db");
-const router = express.Router();
 const PasswordComplexity = require("joi-password-complexity");
 const sendEmail = require("../utils/sendMail");
-const interNumber = require("../utils/interNumber");
 const sendSMS = require("../utils/sendSMS");
+
+const db = require("../startup/db");
+const express = require("express");
+const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { error } = validateUser(req.body);
