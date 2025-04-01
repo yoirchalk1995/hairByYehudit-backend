@@ -9,29 +9,16 @@ router.get("/", async (req, res) => {
   const { userId } = req.query;
   try {
     let [user] = await db.query(
-      "UPDATE users SET is_verified = 1 WHERE user_id = ?",
+      `UPDATE users SET is_verified = 1 WHERE user_id = ?`,
       [userId]
     );
     if (!user) return res.status(404).send(`user with id ${userId} not found`);
 
-    [user] = await db.query(
-      "SELECT is_admin, email, username FROM users WHERE user_id = ?",
-      [userId]
-    );
-
-    const { is_admin: isAdmin, email, username } = user[0];
-
-    const authToken = jwt.sign(
-      {
-        isAdmin: isAdmin,
-        detail: email || username,
-      },
-      process.env.JWT_SECRET
-    );
+    const authToken = validateUser(userId);
 
     res.setHeader("x-auth-token", authToken).send("sign up completed");
   } catch (error) {
-    console.error(errors);
+    console.error(error);
   }
 });
 
@@ -55,20 +42,7 @@ router.post("/", async (req, res) => {
       userId,
     ]);
 
-    const [user] = await db.query(
-      "SELECT is_admin, email, username FROM users WHERE user_id = ?",
-      [userId]
-    );
-
-    const { is_admin: isAdmin, email, username } = user[0];
-
-    const authToken = jwt.sign(
-      {
-        isAdmin: isAdmin,
-        detail: email || username,
-      },
-      process.env.JWT_SECRET
-    );
+    const authToken = validateUser(userId);
 
     res.setHeader("x-auth-token", authToken).send("sign up completed");
   } catch (error) {
@@ -88,6 +62,21 @@ const validateVerification = function (verification) {
   return schema.validate(verification);
 };
 
-const validateUser = async function (userId) {};
+const validateUser = async function (userId) {
+  const [user] = await db.query(
+    "SELECT is_admin, email, username FROM users WHERE user_id = ?",
+    [userId]
+  );
+
+  const { is_admin: isAdmin, email, username } = user[0];
+
+  return (authToken = jwt.sign(
+    {
+      isAdmin: isAdmin,
+      detail: email || username,
+    },
+    process.env.JWT_SECRET
+  ));
+};
 
 module.exports = router;
