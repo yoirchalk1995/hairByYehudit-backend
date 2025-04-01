@@ -1,29 +1,20 @@
 const express = require("express");
 const helmet = require("helmet");
-const mysql = require("mysql2/promise");
-
-const db = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "yoirchalk1995",
-  database: "hair_by_yehudit",
-});
-
-db.getConnection()
-  .then(() => {
-    console.log("connected to db");
-  })
-  .catch((err) => {
-    console.log(`error conecting to db; ${err}`);
-    process.exit(1);
-  });
+const users = require("./routes/users");
+const verification = require("./routes/verification");
+require("./startup/db");
 
 const app = express();
 
 app.use(helmet());
+app.use(express.json());
+app.use("/users", users);
+app.use("/verification", verification);
 
-app.listen(3000, () => {
-  console.log("listening on port 3000");
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`listening on port ${port}`);
 });
 
-exports = db;
+module.exports = app;
