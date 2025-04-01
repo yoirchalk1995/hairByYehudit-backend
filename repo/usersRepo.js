@@ -16,7 +16,6 @@ const getUserByColumn = async function (mysqlColumn, value) {
       message: `no row with ${mysqlColumn} equal to ${value} was found`,
       status: 400,
     };
-  console.log(user);
 
   return user;
 };
