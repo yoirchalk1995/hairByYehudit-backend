@@ -1,15 +1,20 @@
 const bcrypt = require("bcryptjs");
-const express = require("express");
+const interNumber = require("../utils/interNumber");
 const Joi = require("joi");
-const db = require("../startup/db");
-const router = express.Router();
 const PasswordComplexity = require("joi-password-complexity");
+const sendEmail = require("../utils/sendMail");
+const sendSMS = require("../utils/sendSMS");
+
+const db = require("../startup/db");
+const express = require("express");
+const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let { email, userName, contactNumber, password, isAdmin } = req.body;
+  let { email, userName, contactNumber, password, isAdmin, requestsVoice } =
+    req.body;
 
   try {
     if (email) {
@@ -22,10 +27,14 @@ router.post("/", async (req, res) => {
     }
 
     if (userName) {
-      const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [
-        userName,
-      ]);
-      if (rows.length) return res.status(400).send("username already in use");
+      const [rows] = await db.query(
+        "SELECT * FROM users WHERE username = ? OR contact_number = ?",
+        [userName, contactNumber]
+      );
+      if (rows.length)
+        return res
+          .status(400)
+          .send("username and contact number must be unique");
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -36,6 +45,28 @@ router.post("/", async (req, res) => {
       [userName, email, contactNumber, hash, isAdmin]
     );
 
+    let sentEmail = false;
+    if (email) {
+      sendEmail(email, result.insertId);
+      sentEmail = true;
+    }
+
+    if (contactNumber && !sentEmail) {
+      const updatedNumber = interNumber(contactNumber);
+
+      if (requestsVoice) {
+        sendVoiceMessage(updatedNumber);
+        return;
+      }
+
+      const otp = await sendSMS(updatedNumber);
+
+      await db.query("INSERT INTO verifications (user_id, otp) VALUES (?,?)", [
+        result.insertId,
+        otp,
+      ]);
+    }
+
     res.send({
       userId: result.insertId,
       email,
@@ -44,7 +75,8 @@ router.post("/", async (req, res) => {
       isAdmin,
     });
   } catch (err) {
-    res.status(500).send(`error connecting to db ${err}`);
+    console.error(err);
+    res.status(500).send(err);
   }
 });
 
