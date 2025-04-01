@@ -1,9 +1,9 @@
 const bcrypt = require("bcryptjs");
 const interNumber = require("../utils/interNumber");
-const Joi = require("joi");
-const PasswordComplexity = require("joi-password-complexity");
 const sendEmail = require("../utils/sendMail");
 const sendSMS = require("../utils/sendSMS");
+const validateUser = require("../verification/user.verification");
+const { getUserByColumn, insertUser } = require("../repo/usersRepo");
 
 const db = require("../startup/db");
 const express = require("express");
@@ -19,19 +19,18 @@ router.post("/", async (req, res) => {
   try {
     if (email) {
       email = normalizeEmail(email);
-      const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
-        email,
-      ]);
-      if (rows.length)
+      const user = await getUserByColumn("email", email);
+      if (user.length)
         return res.status(400).send("email address already in use");
     }
 
     if (userName) {
-      const [rows] = await db.query(
-        "SELECT * FROM users WHERE username = ? OR contact_number = ?",
-        [userName, contactNumber]
+      const usernameRows = await getUserByColumn("username", userName);
+      const contactNumberRows = await getUserByColumn(
+        "contact_number",
+        contactNumber
       );
-      if (rows.length)
+      if (usernameRows.length || contactNumberRows.length)
         return res
           .status(400)
           .send("username and contact number must be unique");
@@ -40,8 +39,8 @@ router.post("/", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const [result] = await db.query(
-      "INSERT INTO users (username, email, contact_number, hash, is_admin) VALUES (?, ?, ?, ?, ?)",
+    const result = await insertUser(
+      ["username", "email", "contact_number", "hash", "is_admin"],
       [userName, email, contactNumber, hash, isAdmin]
     );
 
@@ -79,30 +78,6 @@ router.post("/", async (req, res) => {
     res.status(500).send(err);
   }
 });
-
-const complexityOptions = {
-  min: 8, // Minimum length
-  max: 30, // Maximum length
-  lowerCase: 1, // At least one lowercase letter
-  upperCase: 1, // At least one uppercase letter
-  numeric: 1, // At least one number
-  symbol: 1, // At least one special character
-  requirementCount: 3,
-};
-
-const validateUser = function (user) {
-  const userSchema = Joi.object({
-    userName: Joi.string().min(5).max(20),
-    email: Joi.string().email(),
-    password: PasswordComplexity(complexityOptions).required(),
-    isAdmin: Joi.boolean(),
-    contactNumber: Joi.string().pattern(/^\d{9,10}$/),
-  })
-    .or("email", "userName")
-    .and("userName");
-
-  return userSchema.validate(user);
-};
 
 const normalizeEmail = function (email) {
   email = email.toLowerCase();
