@@ -45,10 +45,10 @@ router.post("/", async (req, res) => {
       [userName, email, contactNumber, hash, isAdmin]
     );
 
-    const sentEmail = false;
+    let sentEmail = false;
     if (email) {
       sendEmail(email, result.insertId);
-      sendEmail = true;
+      sentEmail = true;
     }
 
     if (contactNumber && !sentEmail) {
@@ -75,7 +75,8 @@ router.post("/", async (req, res) => {
       isAdmin,
     });
   } catch (err) {
-    res.status(500).send(`error connecting to db ${err}`);
+    console.error(err);
+    res.status(500).send(err);
   }
 });
 
