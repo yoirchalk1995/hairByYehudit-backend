@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const interNumber = require("../utils/interNumber");
+const normalizeEmail = require("../utils/normalizeEmail");
 const sendEmail = require("../utils/sendMail");
 const sendSMS = require("../utils/sendSMS");
 const validateUser = require("../verification/user.verification");
@@ -78,17 +79,5 @@ router.post("/", async (req, res) => {
     res.status(500).send(err);
   }
 });
-
-const normalizeEmail = function (email) {
-  email = email.toLowerCase();
-
-  let [localPart, domain] = email.split("@");
-
-  if (domain === "gmail.com") {
-    localPart = localPart.replace(/\./g, "");
-    email = `${localPart}@${domain}`;
-  }
-  return email;
-};
 
 module.exports = router;
