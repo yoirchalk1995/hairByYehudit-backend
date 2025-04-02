@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { error } = validateService(req.body);
+  const { error } = validateService(req.body, "post");
   if (error) return res.status(400).send(error.details[0].message);
 
   let { name, lengthInMin, inPerson, price } = req.body;
@@ -43,5 +43,7 @@ router.get("/id", async (req, res) => {
   if (!service) res.status(404).send(`service with id ${serviceId} not found`);
   res.send(service);
 });
+
+router.put;
 
 module.exports = router;
