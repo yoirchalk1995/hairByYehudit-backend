@@ -10,3 +10,5 @@ const validateService = function (service) {
 
   return schema.validate(service);
 };
+
+module.exports = validateService;
