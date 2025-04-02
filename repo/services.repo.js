@@ -1,6 +1,8 @@
 const db = require("../startup/db");
 
-const getByColumn = async function (mysqlColumn, value) {
+const getServiceByColumn = async function (mysqlColumn, value) {
+  verifyColumns(mysqlColumn);
+
   const [result] = await db.query(
     `
     SELECT * FROM services
@@ -26,3 +28,4 @@ const verifyColumns = function (column) {
 };
 
 module.exports.getAllServices = getAllServices;
+module.exports.getServiceByColumn = getServiceByColumn;
