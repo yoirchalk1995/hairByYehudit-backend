@@ -1,0 +1,37 @@
+const db = require("../startup/db");
+
+const getServiceByColumn = async function (mysqlColumn, value) {
+  verifyColumns(mysqlColumn);
+
+  const [result] = await db.query(
+    `
+    SELECT * FROM services
+    WHERE
+    ${mysqlColumn} = ?
+    `,
+    [value]
+  );
+
+  if (!user)
+    throw {
+      message: `no service with ${mysqlColumn} equal to ${value} was found`,
+      status: 400,
+    };
+
+  return result;
+};
+
+const getAllServices = async function () {
+  const [services] = await db.query("SELECT * FROM services");
+  return services;
+};
+
+const verifyColumns = function (column) {
+  const columns = ["service_id", "name", "length_in_min", "price", "in_person"];
+
+  if (!columns.includes(column))
+    throw { message: `invalid column name "${columnName}"`, status: 400 };
+};
+
+module.exports.getAllServices = getAllServices;
+module.exports.getServiceByColumn = getServiceByColumn;
