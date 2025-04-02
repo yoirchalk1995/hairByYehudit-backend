@@ -1,7 +1,10 @@
 const {
   getAllServices,
   getServiceByColumn,
+  insertService,
 } = require("../repos/services.repo");
+
+const validateService = require("../validation/service.validation");
 
 const router = require("express").Router();
 
@@ -11,7 +14,25 @@ router.get("/", async (req, res) => {
   res.send(results);
 });
 
-router.post("/", async (req, res) => {});
+router.post("/", async (req, res) => {
+  const { error } = validateService(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  let { name, lengthInMin, inPerson, price } = req.body;
+
+  const service = await insertService(
+    ["name", "length_in_min", "in_person", "price"],
+    [name, lengthInMin, inPerson, price]
+  );
+
+  res.send({
+    serviceId: service.insertId,
+    name,
+    lengthInMin,
+    inPerson,
+    price,
+  });
+});
 
 router.get("/id", async (req, res) => {
   const serviceId = req.params.id;

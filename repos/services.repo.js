@@ -21,12 +21,39 @@ const getServiceByColumn = async function (mysqlColumn, value) {
   return result;
 };
 
+/**
+ * @param {string[]} columns - Array of column names
+ * @param {any[]} values - Array of values corresponding to the columns
+ */
+const insertService = async function (columns, values) {
+  if (columns.length != values.length)
+    throw { message: "not every entry has coresponding value", status: 400 };
+  columns.forEach((arg) => {
+    verifyColumn(arg);
+  });
+
+  try {
+    const [service] = await db.query(
+      `
+      INSERT INTO services(
+      ${columns.join(", ")}
+      )
+      VALUES(${Array(values.length).fill("?").join(", ")})`,
+      values
+    );
+
+    return service;
+  } catch (error) {
+    throw Error(error);
+  }
+};
+
 const getAllServices = async function () {
   const [services] = await db.query("SELECT * FROM services");
   return services;
 };
 
-const verifyColumns = function (column) {
+const verifyColumn = function (column) {
   const columns = ["service_id", "name", "length_in_min", "price", "in_person"];
 
   if (!columns.includes(column))
@@ -35,3 +62,4 @@ const verifyColumns = function (column) {
 
 module.exports.getAllServices = getAllServices;
 module.exports.getServiceByColumn = getServiceByColumn;
+module.exports.insertService = insertService;
