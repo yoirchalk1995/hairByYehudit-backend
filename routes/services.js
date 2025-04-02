@@ -1,4 +1,7 @@
-const { getAllServices, getServiceByColumn } = require("../repo/services.repo");
+const {
+  getAllServices,
+  getServiceByColumn,
+} = require("../repos/services.repo");
 
 const router = require("express").Router();
 
