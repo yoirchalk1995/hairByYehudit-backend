@@ -4,7 +4,7 @@ const normalizeEmail = require("../utils/normalizeEmail");
 const sendEmail = require("../utils/sendMail");
 const sendSMS = require("../utils/sendSMS");
 const validateUser = require("../verification/user.verification");
-const { getUserByColumn, insertUser } = require("../repo/usersRepo");
+const { getUserByColumn, insertUser } = require("../repo/users.repo");
 
 const db = require("../startup/db");
 const express = require("express");
