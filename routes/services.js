@@ -20,18 +20,21 @@ router.post("/", async (req, res) => {
 
   let { name, lengthInMin, inPerson, price } = req.body;
 
-  const service = await insertService(
-    ["name", "length_in_min", "in_person", "price"],
-    [name, lengthInMin, inPerson, price]
-  );
-
-  res.send({
-    serviceId: service.insertId,
-    name,
-    lengthInMin,
-    inPerson,
-    price,
-  });
+  try {
+    const service = await insertService(
+      ["name", "length_in_min", "in_person", "price"],
+      [name, lengthInMin, inPerson, price]
+    );
+    res.send({
+      serviceId: service.insertId,
+      name,
+      lengthInMin,
+      inPerson,
+      price,
+    });
+  } catch (error) {
+    res.status(error.status || 500).send(error.message || "server down");
+  }
 });
 
 router.get("/id", async (req, res) => {

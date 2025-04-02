@@ -32,20 +32,16 @@ const insertService = async function (columns, values) {
     verifyColumn(arg);
   });
 
-  try {
-    const [service] = await db.query(
-      `
+  const [service] = await db.query(
+    `
       INSERT INTO services(
       ${columns.join(", ")}
       )
       VALUES(${Array(values.length).fill("?").join(", ")})`,
-      values
-    );
+    values
+  );
 
-    return service;
-  } catch (error) {
-    throw Error(error);
-  }
+  return service;
 };
 
 const getAllServices = async function () {
