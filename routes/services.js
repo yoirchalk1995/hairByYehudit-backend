@@ -1,9 +1,11 @@
 const {
+  insertService,
   getAllServices,
   getServiceByColumn,
-  insertService,
+  updateService,
 } = require("../repos/services.repo");
 
+const extractValuesAndColumnNames = require("../utils/extractColumnsAndValues");
 const validateService = require("../validation/service.validation");
 
 const router = require("express").Router();
@@ -37,13 +39,31 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   const serviceId = req.params.id;
-  const service = getServiceByColumn("service_id", serviceId);
+  console.log(serviceId);
+  const service = await getServiceByColumn("service_id", serviceId);
   if (!service) res.status(404).send(`service with id ${serviceId} not found`);
   res.send(service);
 });
 
-router.put;
+router.patch("/:id", async (req, res) => {
+  const serviceId = req.params.id;
+
+  const { error } = validateService(req.body, "patch");
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const { values, sqlColumns } = extractValuesAndColumnNames(req.body);
+
+  try {
+    await updateService(sqlColumns, values, serviceId);
+    const service = await getServiceByColumn("service_id", serviceId);
+    res.send(service);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).send(error);
+  }
+});
 
 module.exports = router;

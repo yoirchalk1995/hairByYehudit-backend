@@ -1,7 +1,7 @@
 const db = require("../startup/db");
 
 const getServiceByColumn = async function (mysqlColumn, value) {
-  verifyColumns(mysqlColumn);
+  verifyColumn(mysqlColumn);
 
   const [result] = await db.query(
     `
@@ -12,7 +12,7 @@ const getServiceByColumn = async function (mysqlColumn, value) {
     [value]
   );
 
-  if (!user)
+  if (!result)
     throw {
       message: `no service with ${mysqlColumn} equal to ${value} was found`,
       status: 400,
@@ -44,6 +44,31 @@ const insertService = async function (columns, values) {
   return service;
 };
 
+/**
+ * @param {string[]} columns - Array of column names
+ * @param {any[]} values - Array of values corresponding to the columns.
+ */
+const updateService = async function (columns, values, id) {
+  if (columns.length != values.length)
+    throw { message: "not every entry has coresponding value", status: 400 };
+  columns.forEach((arg) => {
+    verifyColumn(arg);
+  });
+
+  values = values.concat(id);
+
+  const setValue = columns.map((column) => `${column} = ?`).join(",");
+
+  const [service] = await db.query(
+    `
+    UPDATE services
+    SET ${setValue}
+    WHERE service_id = ?
+    `,
+    values
+  );
+};
+
 const getAllServices = async function () {
   const [services] = await db.query("SELECT * FROM services");
   return services;
@@ -59,3 +84,4 @@ const verifyColumn = function (column) {
 module.exports.getAllServices = getAllServices;
 module.exports.getServiceByColumn = getServiceByColumn;
 module.exports.insertService = insertService;
+module.exports.updateService = updateService;
