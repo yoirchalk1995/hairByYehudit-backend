@@ -23,21 +23,17 @@ router.post("/", async (req, res) => {
 
   let { name, lengthInMin, inPerson, price } = req.body;
 
-  try {
-    const service = await insertService(
-      ["name", "length_in_min", "in_person", "price"],
-      [name, lengthInMin, inPerson, price]
-    );
-    res.send({
-      serviceId: service.insertId,
-      name,
-      lengthInMin,
-      inPerson,
-      price,
-    });
-  } catch (error) {
-    res.status(500).send("server down");
-  }
+  const service = await insertService(
+    ["name", "length_in_min", "in_person", "price"],
+    [name, lengthInMin, inPerson, price]
+  );
+  res.send({
+    serviceId: service.insertId,
+    name,
+    lengthInMin,
+    inPerson,
+    price,
+  });
 });
 
 router.get("/:id", async (req, res) => {
@@ -63,15 +59,9 @@ router.patch("/:id", async (req, res) => {
 
   const { values, sqlColumns } = extractValuesAndColumnNames(req.body);
 
-  try {
-    await updateService(sqlColumns, values, serviceId);
-    const service = await getServiceByColumn("service_id", serviceId);
-    res.send(service);
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).send(error);
-  }
+  await updateService(sqlColumns, values, serviceId);
+  const service = await getServiceByColumn("service_id", serviceId);
+  res.send(service);
 });
 
 module.exports = router;
