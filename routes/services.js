@@ -1,4 +1,5 @@
 const {
+  deleteService,
   insertService,
   getAllServices,
   getServiceByColumn,
@@ -44,6 +45,13 @@ router.get("/:id", async (req, res) => {
   console.log(serviceId);
   const service = await getServiceByColumn("service_id", serviceId);
   if (!service) res.status(404).send(`service with id ${serviceId} not found`);
+  res.send(service);
+});
+
+router.delete("/:id", async (req, res) => {
+  const serviceId = req.params.id;
+  const service = await getServiceByColumn("service_id", serviceId);
+  await deleteService(serviceId);
   res.send(service);
 });
 

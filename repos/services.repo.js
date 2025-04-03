@@ -74,6 +74,10 @@ const getAllServices = async function () {
   return services;
 };
 
+const deleteService = async function (serviceId) {
+  await db.query("DELETE FROM services WHERE service_id = ?", serviceId);
+};
+
 const verifyColumn = function (column) {
   const columns = ["service_id", "name", "length_in_min", "price", "in_person"];
 
@@ -85,3 +89,4 @@ module.exports.getAllServices = getAllServices;
 module.exports.getServiceByColumn = getServiceByColumn;
 module.exports.insertService = insertService;
 module.exports.updateService = updateService;
+module.exports.deleteService = deleteService;
