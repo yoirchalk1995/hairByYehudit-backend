@@ -3,6 +3,7 @@ const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
 require("express-async-errors");
 const helmet = require("helmet");
+require("./utils/logger");
 const notFound = require("./middleware/notFound");
 
 const services = require("./routes/services");
