@@ -1,5 +1,10 @@
 const db = require("../startup/db");
 
+async function getAllAppointments() {
+  const [appointments] = await db.query("SELECT * FROM appointments");
+  return appointments;
+}
+
 const verifyColumn = function (column) {
   const columns = [
     "appointment_id",
@@ -12,3 +17,5 @@ const verifyColumn = function (column) {
   if (!columns(column))
     throw { message: `invalid column name; ${column}.`, status: 400 };
 };
+
+module.exports.getAllAppointments = getAllAppointments;
