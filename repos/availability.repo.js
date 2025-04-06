@@ -6,7 +6,7 @@ const checkAvailability = async function (
   endDate,
   endTime
 ) {
-  const avaidability = await db.query(
+  const [rows] = await db.query(
     `
     SELECT is_available FROM availability 
     WHERE date BETWEEN ? AND ?
@@ -17,6 +17,7 @@ const checkAvailability = async function (
     )
     `[(startDate, endDate, endTime, startTime)]
   );
+  return rows;
 };
 
 module.exports.checkAvailability = checkAvailability;
