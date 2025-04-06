@@ -21,6 +21,26 @@ const getServiceByColumn = async function (mysqlColumn, value) {
   return result;
 };
 
+const getServiceColumn = async function (column, id) {
+  verifyColumn(column);
+
+  const service = await db.query(
+    `
+    SELECT ${column} FROM services
+    WHERE service_id = ?
+    `,
+    [id]
+  );
+
+  if (!service)
+    throw {
+      message: `no service with id '${id}' was found`,
+      status: 400,
+    };
+
+  return service;
+};
+
 /**
  * @param {string[]} columns - Array of column names
  * @param {any[]} values - Array of values corresponding to the columns
@@ -90,3 +110,4 @@ module.exports.getServiceByColumn = getServiceByColumn;
 module.exports.insertService = insertService;
 module.exports.updateService = updateService;
 module.exports.deleteService = deleteService;
+module.exports.getServiceColumn = getServiceColumn;
