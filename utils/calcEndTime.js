@@ -11,8 +11,10 @@ function calcEndTime(date, startTime, lengthInMin) {
   let jsDate = new Date(year, month - 1, day, hour, minute);
 
   jsDate.setMinutes(jsDate.getMinutes() + lengthInMin);
-  if (jsDate.getDate !== Number(day))
+
+  if (jsDate.getDate() != day) {
     throw Error("Appointment can not span two days");
+  }
 
   year = String(jsDate.getFullYear());
   month = String(jsDate.getMonth() + 1).padStart(2, "0");
