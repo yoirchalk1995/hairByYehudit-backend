@@ -7,9 +7,8 @@ const checkAvailability = async function (date, startTime, endTime) {
     WHERE date = ?
     AND NOT(
     ? <= start_time OR
-    ? >= end_time
+    ? >= end_time)
     LIMIT 1
-    )
     `,
     [date, endTime, startTime]
   );
