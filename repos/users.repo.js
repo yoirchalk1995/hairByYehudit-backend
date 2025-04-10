@@ -11,7 +11,7 @@ const getUserByColumn = async function (mysqlColumn, value) {
     [value]
   );
 
-  if (!user)
+  if (!user[0])
     throw {
       message: `no user with ${mysqlColumn} equal to ${value} was found`,
       status: 400,
