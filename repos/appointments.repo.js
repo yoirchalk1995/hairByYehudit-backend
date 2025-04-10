@@ -29,16 +29,19 @@ async function getAppointmentsByColumn(column, value) {
 const checkAppointment = async function (date, startTime, endTime) {
   const [rows] = await db.query(
     `
-    SELECT * FROM appointment
-    WHERE date = ?
-    AND NOT(
-    ? <= start_time OR
-    ? >= end_time
+    SELECT a.appointment_status
+    FROM appointments a
+    JOIN services s 
+    ON a.service_id = s.service_id
+    WHERE a.date = ?
+    AND a.start_time < ? 
+    AND DATE_ADD(a.start_time, INTERVAL s.length_in_min MINUTE) > ?
+    AND a.appointment_status = 'booked'
     LIMIT 1
-    )
     `,
     [date, endTime, startTime]
   );
+
   return rows;
 };
 /**
@@ -50,14 +53,15 @@ const insertAppointment = async function (values) {
   const result = await db.query(
     `
     INSERT INTO appointments(
-    \`user_id\`,
-    \`service_id\`,
-    \`date\`,
-    \`start_time\`)
-    VALUES (? ? ? ?)
+    user_id,
+    service_id,
+    date,
+    start_time)
+    VALUES (?, ?, ?, ?)
     `,
     values
   );
+  return result;
 };
 
 const verifyColumn = function (column) {
