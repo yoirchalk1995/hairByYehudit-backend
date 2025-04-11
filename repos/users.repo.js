@@ -21,7 +21,8 @@ const getUserByColumn = async function (mysqlColumn, value) {
 };
 
 const getAllUsers = async function () {
-  return (result = await db.query("SELECT * FROM users"));
+  const [rows] = await db.query("SELECT * FROM users");
+  return rows;
 };
 
 /**
