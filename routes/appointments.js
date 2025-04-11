@@ -11,7 +11,6 @@ const { getServiceColumn } = require("../repos/services.repo");
 const calcEndTime = require("../utils/calcEndTime");
 const { checkAvailability } = require("../repos/availability.repo");
 const { checkAppointment } = require("../repos/appointments.repo");
-const { log } = require("winston");
 
 router.get("/", async (req, res) => {
   const appointments = await getAllAppointments();
@@ -51,13 +50,16 @@ router.post("/", async (req, res) => {
     date,
     startTime,
   ]);
-  res.send({
-    appointmentId: appointment.insertId,
+
+  const result = {
+    appointmentId: appointment[0].insertId,
     userId,
     serviceId,
     date,
     startTime,
-  });
+  };
+
+  res.send(result);
 });
 
 module.exports = router;
