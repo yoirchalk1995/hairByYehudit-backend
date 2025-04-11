@@ -1,10 +1,15 @@
 const bcrypt = require("bcryptjs");
 const interNumber = require("../utils/interNumber");
+const _ = require("lodash");
 const normalizeEmail = require("../utils/normalizeEmail");
 const sendEmail = require("../utils/sendMail");
 const sendSMS = require("../utils/sendSMS");
 const validateUser = require("../validation/user.validation");
-const { getUserByColumn, insertUser } = require("../repos/users.repo");
+const {
+  getUserByColumn,
+  insertUser,
+  getAllUsers,
+} = require("../repos/users.repo");
 
 const db = require("../startup/db");
 const express = require("express");
@@ -78,6 +83,19 @@ router.post("/", async (req, res) => {
     console.error(err);
     res.status(500).send(err);
   }
+});
+
+router.get("/", async (req, res) => {
+  const users = await getAllUsers();
+  const cleanedUsers = users.map((user) => {
+    return (user = _.omitBy(
+      _.omit(user, "hash", "is_verified", "created_at"),
+      _.isNull
+    ));
+  });
+  console.log(cleanedUsers);
+
+  res.send(cleanedUsers);
 });
 
 module.exports = router;
