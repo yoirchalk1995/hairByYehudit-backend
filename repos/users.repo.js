@@ -20,6 +20,10 @@ const getUserByColumn = async function (mysqlColumn, value) {
   return user;
 };
 
+const getAllUsers = async function () {
+  return (result = await db.query("SELECT * FROM users"));
+};
+
 /**
  * @param {string[]} columns - Array of column names
  * @param {any[]} values - Array of values corresponding to the columns
@@ -59,3 +63,4 @@ const verifyColumn = function (columnName) {
 
 module.exports.insertUser = insertUser;
 module.exports.getUserByColumn = getUserByColumn;
+module.exports.getAllUsers = getAllUsers;
