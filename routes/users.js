@@ -90,4 +90,16 @@ router.get("/", async (req, res) => {
   res.send(cleanedUsers);
 });
 
+router.get("/:id", async (req, res) => {
+  const userId = req.params.id;
+  const result = await getUserByColumn("user_id", userId);
+  const user = result[0];
+  const cleanedUser = _.omitBy(
+    _.omit(user, "hash", "is_verified", "created_at"),
+    _.isNull
+  );
+
+  res.send(cleanedUser);
+});
+
 module.exports = router;
