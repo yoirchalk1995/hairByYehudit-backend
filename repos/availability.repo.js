@@ -15,4 +15,24 @@ const checkAvailability = async function (date, startTime, endTime) {
   return rows;
 };
 
+/**
+ *
+ * @param {[String, String, String, Boolean]} values  - Array of values to be inserted; date, startTime, endTime and isAvailable
+ *
+ */
+const insertAvailability = async function (values) {
+  const result = await db.query(
+    `
+    INSERT INTO availability(
+    date,
+    start_time,
+    end_time,
+    is_available)
+    VALUES (?, ?, ?, ?)
+    `,
+    values
+  );
+  return result;
+};
 module.exports.checkAvailability = checkAvailability;
+module.exports.insertAvailability = insertAvailability;
