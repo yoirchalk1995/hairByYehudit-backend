@@ -7,6 +7,7 @@ require("./utils/logger");
 const notFound = require("./middleware/notFound");
 
 const appointments = require("./routes/appointments");
+const availability = require("./routes/availability");
 const services = require("./routes/services");
 const users = require("./routes/users");
 const verification = require("./routes/verification");
@@ -19,6 +20,7 @@ app.use(helmet());
 app.use(express.json());
 
 app.use("/appointments", appointments);
+app.use("/availability", availability);
 app.use("/services", services);
 app.use("/users", users);
 app.use("/verification", verification);
