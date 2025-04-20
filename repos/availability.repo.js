@@ -34,5 +34,7 @@ const insertAvailability = async function (values) {
   );
   return result;
 };
+
+
 module.exports.checkAvailability = checkAvailability;
 module.exports.insertAvailability = insertAvailability;

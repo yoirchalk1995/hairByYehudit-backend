@@ -24,4 +24,8 @@ router.post("/", async (req, res) => {
   });
 });
 
+router.get('/', async(req, res)=>{
+  const {startDate, startTime, endDate, endTime} = req.query;
+})
+
 module.exports = router;
