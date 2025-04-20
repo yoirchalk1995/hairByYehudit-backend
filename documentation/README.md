@@ -116,7 +116,7 @@ Included are images of the EER diagram created at the onset of the project:
   <img src="./printscreens/EER.1.png" width="50%">
 </div>
 
-Also visible are variety of data types, foreign keys and triggers used in designing the database
+Also visible are some of the variety of data types, foreign keys and triggers used in designing the database
 <div>
   <img src="./printscreens/EER.2.png" width="50%">
 </div>
