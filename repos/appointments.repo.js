@@ -64,6 +64,31 @@ const insertAppointment = async function (values) {
   return result;
 };
 
+/**
+ * @param {string[]} columns - Array of column names
+ * @param {any[]} values - Array of values corresponding to the columns.
+ */
+const updateAppointment = async function (columns, values, id) {
+  if (columns.length != values.length)
+    throw { message: "not every entry has coresponding value", status: 400 };
+  columns.forEach((arg) => {
+    verifyColumn(arg);
+  });
+
+  values = values.concat(id);
+
+  const setValue = columns.map((column) => `${column} = ?`).join(",");
+
+  const [appointment] = await db.query(
+    `
+    UPDATE appointments
+    SET ${setValue}
+    WHERE appointment_id = ?
+    `,
+    values
+  );
+};
+
 const verifyColumn = function (column) {
   const columns = [
     "appointment_id",
@@ -80,3 +105,4 @@ const verifyColumn = function (column) {
 module.exports.getAllAppointments = getAllAppointments;
 module.exports.checkAppointment = checkAppointment;
 module.exports.insertAppointment = insertAppointment;
+module.exports.updateAppointment = updateAppointment;
