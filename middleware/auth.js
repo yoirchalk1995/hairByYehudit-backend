@@ -7,6 +7,10 @@ module.exports = function (req, res, next) {
     return res.status(401).send("user has not provided authentication token");
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!payload.isAdmin)
+      return res
+        .status(403)
+        .send("user is not authorized to carry out request");
     req.user = payload;
     next();
   } catch (error) {
