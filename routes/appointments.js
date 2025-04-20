@@ -10,7 +10,11 @@ const validateAppointment = require("../validation/appointment.validation");
 const { getServiceColumn } = require("../repos/services.repo");
 const calcEndTime = require("../utils/calcEndTime");
 const { checkAvailability } = require("../repos/availability.repo");
-const { checkAppointment } = require("../repos/appointments.repo");
+const {
+  checkAppointment,
+  updateAppointment,
+  getAppointmentsByColumn,
+} = require("../repos/appointments.repo");
 
 router.get("/", async (req, res) => {
   const appointments = await getAllAppointments();
@@ -60,6 +64,25 @@ router.post("/", async (req, res) => {
   };
 
   res.send(result);
+});
+
+router.patch("/:id", async (req, res) => {
+  const appointmentId = req.params.id;
+
+  let appointment = await getAppointmentsByColumn(
+    "appointment_id",
+    appointmentId
+  );
+  if (appointment[0].appointment_status != "booked")
+    return res
+      .status(409)
+      .send(`appointment has already been met or cancelled`);
+
+  await updateAppointment(["appointment_status"], ["canceled"], appointmentId);
+
+  appointment = await getAppointmentsByColumn("appointment_id", appointmentId);
+
+  res.send(appointment[0]);
 });
 
 module.exports = router;

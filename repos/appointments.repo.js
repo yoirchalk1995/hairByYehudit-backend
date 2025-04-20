@@ -6,7 +6,7 @@ async function getAllAppointments() {
 }
 
 async function getAppointmentsByColumn(column, value) {
-  verifyColumn(mysqlColumn);
+  verifyColumn(column);
 
   const [appointments] = await db.query(
     `
@@ -69,6 +69,9 @@ const insertAppointment = async function (values) {
  * @param {any[]} values - Array of values corresponding to the columns.
  */
 const updateAppointment = async function (columns, values, id) {
+  console.log(columns);
+  console.log(values);
+
   if (columns.length != values.length)
     throw { message: "not every entry has coresponding value", status: 400 };
   columns.forEach((arg) => {
@@ -98,7 +101,7 @@ const verifyColumn = function (column) {
     "appointment_status",
   ];
 
-  if (!columns(column))
+  if (!columns.includes(column))
     throw { message: `invalid column name; ${column}.`, status: 400 };
 };
 
@@ -106,3 +109,4 @@ module.exports.getAllAppointments = getAllAppointments;
 module.exports.checkAppointment = checkAppointment;
 module.exports.insertAppointment = insertAppointment;
 module.exports.updateAppointment = updateAppointment;
+module.exports.getAppointmentsByColumn = getAppointmentsByColumn;
