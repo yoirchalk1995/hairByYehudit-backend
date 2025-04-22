@@ -5,5 +5,6 @@
 - **Appointment Booking**: Clients can check availability of service provider for a specific appointment slot and book the slot if it is available.
 - **Managing Availability**: Service providers can set and update slots when they are not available.
 - **Extensive Error Logging**: All errors including globals are logged to a separate MongoDB. 
+- **Setting headers**: Using CORS and helmet middlewares to control security and Cross Origin Resource headers. 
 
 [Return to home page](./README.md)
