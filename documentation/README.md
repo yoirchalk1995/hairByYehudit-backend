@@ -5,7 +5,8 @@ This project is the backend for managing appointments for a hair salon. Given ti
 The backend is built using express package for Node.js and MySQL DB for data management.
 
 ## Documentation index
-- [Features](./features.md)
-- [Tech Stack](./tech-stack.md)
-- [Data Management](./db.md)
+- [Features](features.md)
+- [Tech Stack](tech-stack.md)
+- [Data Management](db.md)
+- [API Endpoints](api.md)
 

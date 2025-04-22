@@ -10,7 +10,7 @@ router.post("/", auth, async (req, res) => {
 
   const { date, startTime, endTime, isAvailable } = req.body;
 
-  const availablity = await insertAvailability([
+  const availability = await insertAvailability([
     date,
     startTime,
     endTime,
@@ -18,15 +18,11 @@ router.post("/", auth, async (req, res) => {
   ]);
 
   res.send({
-    availablityId: availablity[0].insertId,
+    availabilityId: availability[0].insertId,
     startTime,
     endTime,
     isAvailable,
   });
-});
-
-router.get("/", async (req, res) => {
-  const { startDate, startTime, endDate, endTime } = req.query;
 });
 
 module.exports = router;

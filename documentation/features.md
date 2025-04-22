@@ -4,5 +4,6 @@
 - **User Authentication**: Secure login and session management for users. Certain routes protected for use by users with administrative rights.
 - **Appointment Booking**: Clients can check availability of service provider for a specific appointment slot and book the slot if it is available.
 - **Managing Availability**: Service providers can set and update slots when they are not available.
+- **Extensive Error Logging**: All errors including globals are logged to a separate MongoDB. 
 
 [Return to home page](./README.md)

@@ -9,5 +9,6 @@ In this project I have made it my business to demonstrate prowess in a wide vari
 - **Email Notifications**: Nodemailer
 - **Environment Variables**: dotenv
 - **Password Encryption**: bcrypt
+- **Error Logging**: Winston transports with MongoDB
 
 [Return to home page](./README.md)
